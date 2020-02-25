@@ -48,12 +48,17 @@ module.exports = {
         "padded-blocks": 0,
         "comma-dangle": 0,
         "no-undef": 0,
+        "lines-between-class-members": [
+            "error",
+            "always",
+            { exceptAfterSingleLine: true }
+        ],
         "import/extensions": [
             "error",
             "ignorePackages",
             {
-                ts: "always",
-                js: "always"
+                ts: "never",
+                js: "never"
             }
         ]
     }

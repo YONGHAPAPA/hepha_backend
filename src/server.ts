@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import 'dotenv/config';
 import App from './app';
 import validateEnv from './utils/validateEnv';

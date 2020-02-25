@@ -1,4 +1,4 @@
-import { IsOptional, IsString, ValidateNested, IsBoolean} from 'class-validator';
+import { IsOptional, IsString, ValidateNested, IsBoolean } from 'class-validator';
 
 class UserDto {
     @IsString()
