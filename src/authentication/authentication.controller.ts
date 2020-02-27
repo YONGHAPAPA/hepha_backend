@@ -22,9 +22,10 @@ class AuthenticationController implements Controller {
     private register = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         const userData: UserDto = req.body;
 
-
         try {
-            const { user, tokenData } = await this.authenticationService.register(userData);
+            const { user, cookieData } = await this.authenticationService.register(userData);
+            res.setHeader('Set-Cookie', [cookieData]);
+            res.send(user);
         } catch(err) {
             next(err);
         }

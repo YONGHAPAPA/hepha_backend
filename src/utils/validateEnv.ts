@@ -1,4 +1,4 @@
-import { cleanEnv, str, port } from 'envalid';
+import { cleanEnv, str, port, num } from 'envalid';
 
 function validateEnv() {
     cleanEnv(process.env, {
@@ -7,7 +7,8 @@ function validateEnv() {
         MONGO_USER: str(), 
         PORT: port(), 
         JWT_SECRET: str(), 
-        TWO_FA_APP_NAME: str()
+        TWO_FA_APP_NAME: str(), 
+        COOKIE_EXPIRE_TIME: num(),
     });
 }
 
