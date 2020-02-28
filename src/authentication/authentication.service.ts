@@ -1,28 +1,38 @@
 import userModel from '../users/user.model';
-import userDTO from '../users/user.dto';
+import userCreateDTO from '../users/user.create.dto';
+import userLoginDTO from '../users/user.login.dto';
 import UserWithEmailAlreadyExistsException from '../exceptions/UserWithEmailAlreadyExistsException';
+import NoExistsUserByEmailException from '../exceptions/NoExistsUserByEmailException';
+import WrongCredentialsException from '../exceptions/WrongCredentialsException';
+import ServiceException from '../exceptions/ServiceExcpetion';
 import * as bcryptjs from 'bcryptjs';
 import User from '../users/user.interface';
-import UserDataInToken from './cookies/UserDataInToken.interface';
-import TokenData from './cookies/TokenData.interface';
+import UserAuthenticationCookie from '../users/user.authentication.cookie.interface';
 import * as jwt from 'jsonwebtoken';
 import CookieLib from './cookies/cookie.lib';
+
 
 class AuthenticationService {
 
     private user = userModel;
     private cookieLib = new CookieLib();
 
-
-    public async register(userData: userDTO) {
-        if(await this.user.findOne({ email: userData.email })) {
-            throw new UserWithEmailAlreadyExistsException(userData.email);
+    public async register(userCreateData: userCreateDTO) {
+        if(await this.user.findOne({ email: userCreateData.email })) {
+            throw new UserWithEmailAlreadyExistsException(userCreateData.email);
         }
 
-        const hashedPassword = await bcryptjs.hash(userData.password, 10);
-        const user = await this.user.create({ ...userData, password: hashedPassword });
-        const cookieData = this.cookieLib.createCookie(user, ['email'], parseFloat(process.env.COOKIE_EXPIRE_TIME));
+        const salt = await bcryptjs.genSalt(parseFloat(process.env.SALT_ROUND));
+        const hashedPasword = await bcryptjs.hash(userCreateData.password, salt);
+        const user = await this.user.create({ ...userCreateData, password: hashedPasword });
+        
+        const objUserForCookie: UserAuthenticationCookie = {
+            _id: user._id,
+            email: user.email,
+        };
 
+        const cookieData = await this.cookieLib.createCookie(objUserForCookie, parseFloat(process.env.COOKIE_EXPIRE_TIME));
+                
         return {
             user,
             cookieData
@@ -30,20 +40,32 @@ class AuthenticationService {
     }
 
 
-    
-    // private createUserToken(user: User): TokenData {
-    //     const expiresIn = 60 * 60;
-    //     const secret = process.env.JWT_SECRET;
-    //     const userDataInToken: UserDataInToken = { 
-    //         name: user.name,
-    //         email: user.email 
-    //     };
+    public async login(userLoginData: userLoginDTO) {
+        const user = await this.user.findOne({ email: userLoginData.email });
 
-    //     return {
-    //         token: jwt.sign(userDataInToken, secret, { expiresIn }),
-    //         expiresIn
-    //     };
-    // }
+        const objUserForCooke: UserAuthenticationCookie = {
+            _id: null, 
+            email: null
+        };
+
+        if(user) {
+            const isMatched = await bcryptjs.compare(userLoginData.password, user.password);
+
+            if(isMatched) {
+                Object.assign(objUserForCooke, { _id: user._id, email: user.email });
+                const cookieData = await this.cookieLib.createCookie(objUserForCooke, parseFloat(process.env.COOKIE_EXPIRE_TIME));
+
+                return {
+                    user, 
+                    cookieData
+                };
+            } else {
+                throw new WrongCredentialsException();
+            }
+        } else {
+            throw new NoExistsUserByEmailException(userLoginData.email);
+        }
+    }
 }
 
 export default AuthenticationService;

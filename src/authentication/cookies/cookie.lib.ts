@@ -1,24 +1,25 @@
-import TokenData from './TokenData.interface'; 
-import UserDataInToken from './UserDataInToken.interface';
 import * as jwt from 'jsonwebtoken';
+
+interface TokenData {
+    expiresIn: number, 
+    token: string,
+}
 
 class CookieLib {
 
-    public createCookie<T, K extends keyof T>(objData: T, properties: K[], expiresMiutes: number) {
+    public createCookie<T>(objData: T, expiresMiutes: number) {
         const expiresMinutes = 60 * expiresMiutes;
-        const tokenData: TokenData = this.createToken(objData, properties);
+        const tokenData: TokenData = this.createToken(objData);
         return `Authoriztion=${tokenData.token}; HttpOnly: Max-Age=${expiresMinutes};`;
     }
 
-    public createToken<T, K extends keyof T>(objData: T, properties: K[]): TokenData {
-        
+
+    public createToken<T>(objForToken: T): TokenData {
         const secret = process.env.JWT_SECRET;
         const tokenData = {};
+        const properties = Object.getOwnPropertyNames(objForToken);
 
-        properties.map((property) => { 
-            //console.log(tokenData);
-            return Object.assign(tokenData, { [property]: objData[property] });
-        });
+        properties.map((property) => Object.assign(tokenData, { [property]: objForToken[property] }));
 
         return {
             expiresIn: 0, 
