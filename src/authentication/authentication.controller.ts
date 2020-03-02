@@ -2,7 +2,7 @@ import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import UserCreateDTO from '../users/user.create.dto';
 import UserLoginDTO from '../users/user.login.dto';
-import validationDTOMiddleware from '../middlewares/validationDto.middleware';
+import validationDTOMiddleware from '../middlewares/validationDTO.middleware';
 import AuthenticationService from './authentication.service';
 
 
