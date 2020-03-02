@@ -5,11 +5,11 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon --watch src --delay 1 --exec ts-node ./src/server.ts",
-    "live": "npm run run-live",
-    "run-live": "node dist/server.js",
+    "build-ts": "tsc",
     "postinstall": "npm run build-ts",
-    "build-ts": "tsc"
+    "run-live": "node dist/server.js",   
+    "dev": "nodemon --watch src --delay 1 --exec ts-node ./src/server.ts",
+    "live": "npm run run-live"
   },
   "repository": {
     "type": "git",

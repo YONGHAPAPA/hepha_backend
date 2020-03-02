@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import * as express from 'express';
 import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
