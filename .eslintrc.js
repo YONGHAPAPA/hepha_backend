@@ -23,6 +23,7 @@ module.exports = {
         sourceType: "module"
     },
     plugins: ["react", "@typescript-eslint"],
+
     rules: {
         indent: ["error", 4],
         semi: ["error", "always"],
@@ -58,7 +59,11 @@ module.exports = {
             "ignorePackages",
             {
                 ts: "never",
-                js: "never"
+                tsx: "never",
+                js: "never",
+                json: "never",
+                jsx: "never",
+                "": "never"
             }
         ]
     }
